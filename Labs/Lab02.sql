@@ -1,0 +1,10 @@
+SELECT SUM(salary) AS total_salary FROM hr.employees;
+SELECT AVG(salary) AS average_salary FROM hr.employees;
+SELECT manager_id, COUNT(*) AS num_employees FROM hr.employees GROUP BY manager_id;
+SELECT * FROM hr.employees WHERE salary = (SELECT MIN(salary) FROM hr.employees);
+SELECT TO_CHAR(SYSDATE, 'DD-MM-YYYY') AS current_date FROM dual;
+SELECT TO_CHAR(SYSDATE, 'DAY MONTH YEAR') AS current_date FROM dual;
+SELECT * FROM hr.employees WHERE TO_CHAR(hire_date, 'DAY') = 'Wednesday';
+SELECT MONTHS_BETWEEN(TO_DATE('01-JAN-2025', 'DD-MON-YYYY'), TO_DATE('01-NOV-2024', 'DD-MON-YYYY')) AS months_diff FROM dual;
+SELECT employee_id, first_name, last_name, FLOOR(MONTHS_BETWEEN(SYSDATE,hire_date)) AS months_worked FROM hr.employees;
+SELECT SUBSTR(last_name,1,5) AS last_name_5chars FROM hr.employees;
