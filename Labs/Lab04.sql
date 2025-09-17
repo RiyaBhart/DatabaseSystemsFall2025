@@ -103,7 +103,7 @@ CREATE TABLE Enrollment (
     student_id INT,
     course_id INT,
     PRIMARY KEY (student_id, course_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES Course(course_id)
 );
 
@@ -158,3 +158,128 @@ Select f.faculty_id, f.name, f.salary
 from Faculty f
 where f.salary>(select avg(salary) from faculty);
 
+-- TASK 6
+Select s.name, s.student_id, s.gpa
+from Student s
+where s.gpa > (select min(s2.gpa) from Student s2
+JOIN Department d on s2.dept_id = d.dept_id
+where d.dept_name ='CS');
+
+-- TASK 7
+SELECT s.name, s.gpa, s.student_id
+FROM (
+    SELECT student_id, name, gpa
+    FROM Student
+    ORDER BY gpa DESC
+) s
+WHERE ROWNUM <= 3;
+
+-- TASK 8
+SELECT e.student_id, s.name
+FROM Enrollment e
+JOIN Student s ON e.student_id = s.student_id
+WHERE e.course_id IN (
+    SELECT course_id
+    FROM Enrollment e2
+    JOIN Student sa ON e2.student_id = sa.student_id
+    WHERE sa.name = 'Ali'
+)
+GROUP BY e.student_id, s.name
+HAVING COUNT(DISTINCT e.course_id) = (
+    SELECT COUNT(DISTINCT e3.course_id)
+    FROM Enrollment e3
+    JOIN Student sa2 ON e3.student_id = sa2.student_id
+    WHERE sa2.name = 'Ali'
+);
+
+-- TASK 9
+Select d.dept_id, d.dept_name, SUM(s.fee_paid) as total_fees
+from Department d
+join Student s on d.dept_id = s.dept_id
+group by d.dept_id, d.dept_name;
+
+-- TASK 10 
+SELECT DISTINCT c.course_id, c.course_name
+FROM Course c
+JOIN Enrollment e ON c.course_id = e.course_id
+JOIN Student s ON e.student_id = s.student_id
+WHERE s.gpa > 3.5;
+
+-- TASK 11
+Select d.dept_id, d.dept_name, sum(s.fee_paid) as fee_paid
+from Department d
+Join Student s on d.dept_id = s.dept_id
+group by d.dept_id ,d.dept_name
+having sum(s.fee_paid)>1000000;
+
+-- TASK 12
+Select d.dept_id, d.dept_name, count(f.faculty_id) as high_paid_faculty
+from Department d
+join Faculty f on d.dept_id = f.dept_id
+where f.salary>100000
+group by d.dept_id, d.dept_name
+having count(f.faculty_id)>5;
+
+-- TASK 13
+DELETE FROM Student 
+Where gpa<(SELECT AVG(gpa) FROM Student);
+
+-- TASK 14
+DELETE FROM Course
+WHERE course_id NOT IN (
+    SELECT DISTINCT course_id 
+    FROM Enrollment
+);
+
+
+-- TASK 15
+CREATE TABLE highfee_students as
+SELECT * FROM Student 
+WHERE fee_paid>(SELECT AVG(fee_paid) FROM Student);
+
+-- TASK 16
+CREATE TABLE Retired_Faculty AS
+SELECT * FROM Faculty WHERE 1=0;  -- empty table with same structure
+
+INSERT INTO Retired_faculty (faculty_id, name, dept_id, salary, joining_date)
+SELECT f.faculty_id, f.name, f.dept_id, f.salary, f.joining_date
+FROM Faculty f
+WHERE f.joining_date<(SELECT MIN(joining_date) FROM Faculty);
+
+-- TASK 17
+SELECT dept_id, dept_name, total_fee
+FROM (
+    SELECT d.dept_id, d.dept_name, SUM(s.fee_paid) AS total_fee
+    FROM Department d
+    JOIN Student s ON d.dept_id = s.dept_id
+    GROUP BY d.dept_id, d.dept_name
+    ORDER BY SUM(s.fee_paid) DESC
+) 
+WHERE ROWNUM = 1;
+
+-- TASK 18
+SELECT course_id, course_name, num_students
+FROM (
+    SELECT c.course_id, c.course_name, COUNT(e.student_id) AS num_students
+    FROM Course c
+    LEFT JOIN Enrollment e ON c.course_id = e.course_id
+    GROUP BY c.course_id, c.course_name
+    ORDER BY COUNT(e.student_id) DESC
+)
+WHERE ROWNUM <= 3;
+
+-- TASK 19
+SELECT s.student_id, s.name, s.gpa, count(e.course_id) as enrolled_courses
+From Student s 
+Join Enrollment e on s.student_id = e.student_id
+GROUP BY s.student_id, s.name, s.gpa
+HAVING Count(e.course_id)>3 AND s.gpa>(SELECT AVG(gpa) FROM Student);
+
+-- TASK 20 
+CREATE TABLE Unassigned_faculty as
+SELECT * FROM Faculty 
+WHERE dept_id NOT IN (
+    SELECT DISTINCT c.dept_id 
+    FROM Course c
+    JOIN Enrollment e on c.course_id = e.course_id
+);
