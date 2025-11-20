@@ -93,6 +93,306 @@ db.students.find( {_id: ObjectId('691e9321a08bc72d0ce8a55d')})
   age: 21,
   city: 'karachi'
 }
+db.students.insertMany([{name : "nitu" , age :21 , city : "hub"}, {name : "javeriah" , age :21 , city : "islamabad"}])
+
+
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('691e95c2a08bc72d0ce8a55f'),
+    '1': ObjectId('691e95c2a08bc72d0ce8a560')
+  }
+}
+db.students.find({$or : [ {city : "karachi"}, {city : "lahore"} ]})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+db.students.find({city $in  {city : "karachi"}, {city : "lahore"} })
+SyntaxError: Unexpected token, expected "," (1:23)
+
+[0m[31m[1m>[22m[39m[90m 1 |[39m db[33m.[39mstudents[33m.[39mfind({city $in  {city [33m:[39m [32m"karachi"[39m}[33m,[39m {city [33m:[39m [32m"lahore"[39m} })
+ [90m   |[39m                        [31m[1m^[22m[39m[0m
+db.students.find({city: { $in:  ['karachi','islamabad']}})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+db.students.find({age: {$gt:20 }})
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a55f'),
+  name: 'nitu',
+  age: 21,
+  city: 'hub'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+db.students.find({age: {$lt:20 }})
+db.students.find({age: {$lt:21 }})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+db.students.find({age: {$ne:21 }})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+db.students.find({name: /^a/})
+db.students.find({name: /^j/})
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+db.students.find({age: {$ne:20 }})
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a55f'),
+  name: 'nitu',
+  age: 21,
+  city: 'hub'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+db.students.find().sort({name : 1})
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a55f'),
+  name: 'nitu',
+  age: 21,
+  city: 'hub'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+db.students.find().sort({name : -1})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a55f'),
+  name: 'nitu',
+  age: 21,
+  city: 'hub'
+}
+{
+  _id: ObjectId('691e95c2a08bc72d0ce8a560'),
+  name: 'javeriah',
+  age: 21,
+  city: 'islamabad'
+}
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+db.students.find().limit(2)
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+db.students.countDocuments()
+6
+db.students.updateOne()
+MongoshInvalidInputError: [COMMON-10001] Missing required argument at position 0 (Collection.updateOne)
+db.students.updateOne({ _id: ObjectId('691e9294a08bc72d0ce8a55c')}, {$set:{name: "zubda",age: 20, city:"lahore"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+db.students.find({name: "zubda"})
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c'),
+  age: 20,
+  city: 'lahore',
+  name: 'zubda'
+}
+db.students.deleteOne({  _id: ObjectId('691e9294a08bc72d0ce8a55c')})
+{
+  acknowledged: true,
+  deletedCount: 1
+}
 riya
 Selection deleted
 
