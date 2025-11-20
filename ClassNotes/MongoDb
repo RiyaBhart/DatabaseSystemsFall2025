@@ -1,0 +1,98 @@
+show dbs
+admin   40.00 KiB
+config  48.00 KiB
+local   88.00 KiB
+use riya
+switched to db riya
+show dbs
+admin   40.00 KiB
+config  48.00 KiB
+local   88.00 KiB
+db.createCollection("students")
+{ ok: 1 }
+show dbs
+admin   40.00 KiB
+config  48.00 KiB
+local   88.00 KiB
+riya     8.00 KiB
+db.students.find()
+show collections
+students
+sb.students.insertOne({name : "riya" , age :20 , city : "karachi"})
+ReferenceError: sb is not defined
+db.students.insertOne({name : "riya" , age :20 , city : "karachi"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('691e923aa08bc72d0ce8a55b')
+}
+db.students.insertOne([{name : "rayyan" , age :21 , city : "karachi"}, {name : "rija" , age :21 , city : "karachi"}])
+{
+  acknowledged: true,
+  insertedId: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+db.students.insertMany([{name : "rayyan" , age :21 , city : "karachi"}, {name : "rija" , age :21 , city : "karachi"}])
+
+
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('691e9321a08bc72d0ce8a55d'),
+    '1': ObjectId('691e9321a08bc72d0ce8a55e')
+  }
+}
+db.students.find()
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+{
+  '0': {
+    name: 'rayyan',
+    age: 21,
+    city: 'karachi'
+  },
+  '1': {
+    name: 'rija',
+    age: 21,
+    city: 'karachi'
+  },
+  _id: ObjectId('691e9294a08bc72d0ce8a55c')
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55e'),
+  name: 'rija',
+  age: 21,
+  city: 'karachi'
+}
+db.students.find({name : "riya"})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+db.students.find({name : "riya", age : 20})
+{
+  _id: ObjectId('691e923aa08bc72d0ce8a55b'),
+  name: 'riya',
+  age: 20,
+  city: 'karachi'
+}
+db.students.find( {_id: ObjectId('691e9321a08bc72d0ce8a55d')})
+{
+  _id: ObjectId('691e9321a08bc72d0ce8a55d'),
+  name: 'rayyan',
+  age: 21,
+  city: 'karachi'
+}
+riya
+Selection deleted
+
