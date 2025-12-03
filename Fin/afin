@@ -1,0 +1,353 @@
+
+
+# ✅ **Question 01 — SQL Queries**
+
+**Assumptions:**
+Tables used → *employees(emp_id, emp_name, salary, hire_date, dept_id, manager_id)*, *departments(dept_id, dept_name)*.
+
+---
+
+### **1. Required Output (Assuming Q1 missing screenshot)**
+
+Let’s assume the question wants:
+
+✔ Employee name, department name, salary.
+
+```sql
+SELECT e.emp_name, d.dept_name, e.salary
+FROM employees e
+JOIN departments d USING (dept_id);
+```
+
+---
+
+### **2. Departments where (MAX(salary) – MIN(salary)) > 4000**
+
+```sql
+SELECT d.dept_name,
+       MAX(e.salary) AS max_salary,
+       MIN(e.salary) AS min_salary,
+       (MAX(e.salary) - MIN(e.salary)) AS salary_difference
+FROM employees e
+JOIN departments d USING (dept_id)
+GROUP BY d.dept_name
+HAVING (MAX(e.salary) - MIN(e.salary)) > 4000;
+```
+
+---
+
+### **3. Year + Department that hired the most employees**
+
+```sql
+SELECT d.dept_name,
+       EXTRACT(YEAR FROM e.hire_date) AS hire_year,
+       COUNT(*) AS total_hires
+FROM employees e
+JOIN departments d USING (dept_id)
+GROUP BY d.dept_name, EXTRACT(YEAR FROM e.hire_date)
+ORDER BY total_hires DESC
+FETCH FIRST 1 ROW ONLY;
+```
+
+---
+
+### **4. Employees whose salary has NOT changed since they were hired**
+
+Assume a column: *original_salary* exists.
+
+```sql
+SELECT e.emp_name,
+       e.hire_date,
+       e.salary AS current_salary,
+       d.dept_name
+FROM employees e
+JOIN departments d USING (dept_id)
+WHERE e.salary = e.original_salary;
+```
+
+---
+
+### **5. Employees earning more than their manager**
+
+```sql
+SELECT e.emp_name AS employee,
+       m.emp_name AS manager,
+       e.salary AS employee_salary,
+       m.salary AS manager_salary
+FROM employees e
+JOIN employees m
+ON e.manager_id = m.emp_id
+WHERE e.salary > m.salary;
+```
+
+---
+
+# ✅ **Question 02 — Triggers & Transactions**
+
+---
+
+## **A. Trigger (15 marks)**
+
+### **Trigger: stock_threshold_check**
+
+```sql
+CREATE OR REPLACE TRIGGER stock_threshold_check
+BEFORE UPDATE ON Products
+FOR EACH ROW
+DECLARE 
+BEGIN
+    IF :NEW.stock_quantity < 5 THEN
+        INSERT INTO Stock_Alert
+        (alert_id, product_id, current_stock, alert_message, alert_date)
+        VALUES
+        (stock_alert_seq.NEXTVAL,
+         :NEW.product_id,
+         :NEW.stock_quantity,
+         'Stock below threshold!',
+         SYSDATE);
+    END IF;
+END;
+/
+```
+
+---
+
+## **B. Transaction (5 marks)**
+
+### **Hotel Guest Reservation Transaction**
+
+```sql
+BEGIN
+    SAVEPOINT start_tran;
+
+    -- Insert guest
+    INSERT INTO guests VALUES (1, 'Ali Khan', 'ali@gmail.com');
+
+    -- Select room
+    INSERT INTO rooms VALUES (101, 'Deluxe', 5000);
+
+    -- Reservation
+    INSERT INTO reservations
+    VALUES (1, 1, 101, DATE '2024-12-02', DATE '2024-12-05');
+
+    -- Payment
+    INSERT INTO payments VALUES (1, 1, 5000);
+
+    -- Log
+    INSERT INTO reservation_log VALUES (1, 1, 'Reservation Completed');
+
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK TO start_tran;
+        DBMS_OUTPUT.PUT_LINE('Transaction Failed!');
+END;
+/
+```
+
+---
+
+# ✅ **Question 03 — PL/SQL (15 marks)**
+
+---
+
+## **1. Stored Procedure: RecordSale**
+
+```sql
+CREATE OR REPLACE PROCEDURE RecordSale
+(
+    p_product_id   IN NUMBER,
+    p_sale_amount  IN NUMBER
+)
+AS
+    v_stock NUMBER;
+BEGIN
+    SELECT stock_quantity
+    INTO v_stock
+    FROM Products
+    WHERE product_id = p_product_id;
+
+    IF p_sale_amount > v_stock THEN
+        DBMS_OUTPUT.PUT_LINE('Insufficient stock for the sale.');
+    ELSE
+        UPDATE Products
+        SET stock_quantity = stock_quantity - p_sale_amount
+        WHERE product_id = p_product_id;
+
+        INSERT INTO Sales
+        (sale_id, product_id, sale_date, sale_amount)
+        VALUES
+        (sales_seq.NEXTVAL, p_product_id, SYSDATE, p_sale_amount);
+
+        DBMS_OUTPUT.PUT_LINE('Sale recorded successfully.');
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Product not found.');
+END;
+/
+```
+
+---
+
+## **2. Function: GetTotalSalesAmount**
+
+```sql
+CREATE OR REPLACE FUNCTION GetTotalSalesAmount
+(p_product_id IN NUMBER)
+RETURN NUMBER
+AS
+    v_total NUMBER;
+BEGIN
+    SELECT SUM(sale_amount)
+    INTO v_total
+    FROM Sales
+    WHERE product_id = p_product_id;
+
+    RETURN NVL(v_total, 0);
+END;
+/
+```
+
+---
+
+# ✅ **Question 04 — MongoDB (10 marks)**
+
+---
+
+## **Insert All Documents**
+
+```javascript
+db.books.insertMany([
+  { book_id:"B001", title:"Data Science Fundamentals", author:"John Smith", category:"Technology", price:29.99, in_stock:true },
+  { book_id:"B002", title:"Learning MongoDB", author:"Jane Doe", category:"Technology", price:35.99, in_stock:false },
+  { book_id:"B003", title:"Web Development with JavaScript", author:"Mark Lee", category:"Programming", price:24.99, in_stock:true },
+  { book_id:"B004", title:"Introduction to Python", author:"Alice Brown", category:"Programming", price:19.99, in_stock:true },
+  { book_id:"B005", title:"Advanced SQL Queries", author:"Michael White", category:"Database", price:45.99, in_stock:true },
+  { book_id:"B006", title:"C++ Basics", author:"John Smith", category:"Programming", price:29.99, in_stock:true },
+  { book_id:"B007", title:"Machine Learning with Python", author:"Sara Green", category:"Technology", price:39.99, in_stock:true },
+  { book_id:"B008", title:"Deep Learning Essentials", author:"David Grey", category:"Technology", price:59.99, in_stock:false },
+  { book_id:"B009", title:"Data Structures in Java", author:"Lucas Blue", category:"Programming", price:49.99, in_stock:true },
+  { book_id:"B010", title:"Artificial Intelligence", author:"Sophia Grey", category:"Technology", price:69.99, in_stock:true }
+]);
+```
+
+---
+
+## **1. Update Technology books < $40, set in_stock = false**
+
+```javascript
+db.books.updateMany(
+  { category:"Technology", price: { $lt: 40 } },
+  { $set: { in_stock: false } }
+);
+```
+
+---
+
+## **2. Delete B008 if out of stock**
+
+```javascript
+db.books.deleteOne({ book_id:"B008", in_stock:false });
+```
+
+---
+
+## **3. Update John Smith Technology books price to 35**
+
+```javascript
+db.books.updateMany(
+  { author:"John Smith", category:"Technology", price:{ $gt:20 }, in_stock:true },
+  { $set:{ price:35 } }
+);
+```
+
+---
+
+## **4. Programming books price > 25 & in_stock = true sorted desc**
+
+```javascript
+db.books.find(
+  { category:"Programming", price:{ $gt:25 }, in_stock:true }
+).sort({ price:-1 });
+```
+
+---
+
+## **5. Delete all Programming out of stock OR price > 50**
+
+```javascript
+db.books.deleteMany({
+  $or:[
+    { category:"Programming", in_stock:false },
+    { price: { $gt:50 } }
+  ]
+});
+```
+
+---
+
+## **6. Update B005 & B006 price = 40, in_stock = true**
+
+```javascript
+db.books.updateMany(
+  { book_id: { $in:["B005","B006"] } },
+  { $set:{ price:40, in_stock:true } }
+);
+```
+
+---
+
+## **7. Find author = Jane Doe OR category = Database, price 30–60**
+
+```javascript
+db.books.find({
+  $and:[
+    { price:{ $gte:30, $lte:60 } },
+    { $or:[ { author:"Jane Doe" }, { category:"Database" } ] }
+  ]
+});
+```
+
+---
+
+## **8. Update Programming books price to 50 if <50 and in stock**
+
+```javascript
+db.books.updateMany(
+  { category:"Programming", price:{ $lt:50 }, in_stock:true },
+  { $set:{ price:50 } }
+);
+```
+
+---
+
+## **9. Delete where price < 30 AND category = Technology AND in_stock = false**
+
+```javascript
+db.books.deleteMany({
+  category:"Technology",
+  price:{ $lt:30 },
+  in_stock:false
+});
+```
+
+---
+
+## **10. Update B010 title + reduce price by 10%**
+
+```javascript
+db.books.updateOne(
+  { book_id:"B010" },
+  {
+    $set:{ title:"AI Revolution" },
+    $mul:{ price:0.9 }
+  }
+);
+```
+
+---
+
+
