@@ -1,0 +1,372 @@
+Great — I’ll now **teach you the entire MongoDB Manual (Lab 11)** step by step in a very easy way.
+
+We will cover everything in the same order as your manual:
+
+---
+
+# ⭐ **1. Overview of MongoDB**
+
+MongoDB is a:
+
+✔ NoSQL
+✔ Document-oriented
+✔ Schema-less (fields can differ)
+✔ JSON-based database
+✔ High performance, scalable, cross-platform
+
+It uses **documents** instead of rows and **collections** instead of tables.
+
+---
+
+# ⭐ **2. MongoDB Terminology**
+
+| RDBMS       | MongoDB                       |
+| ----------- | ----------------------------- |
+| Database    | Database                      |
+| Table       | Collection                    |
+| Row         | Document                      |
+| Column      | Field                         |
+| Primary key | _id (auto-generated ObjectId) |
+
+A **document** looks like this:
+
+```json
+{
+  "name": "Riya",
+  "age": 20,
+  "skills": ["AI", "Python"]
+}
+```
+
+---
+
+# ⭐ **3. Installing MongoDB**
+
+MongoDB comes with:
+
+✔ **MongoDB Server** (the database engine)
+✔ **MongoDB Compass** (GUI tool)
+✔ **mongosh** (MongoDB Shell for CLI)
+
+You have screenshots in your manual, so I will skip installation steps unless you want them explained.
+
+---
+
+# ⭐ **4. Designing Schema in MongoDB**
+
+MongoDB is Schema-less, but good design rules are:
+
+### ✔ Combine related info into one document
+
+### ✔ Avoid joins
+
+### ✔ Duplicate small fields if it avoids joins
+
+### ✔ Embed data instead of normalizing
+
+### ✔ Optimize for common read patterns
+
+---
+
+# ⭐ **Example Schema Difference**
+
+## ✔ RDBMS Design (For a Blogging Website)
+
+* posts table
+* post_tags table
+* comments table
+
+Requires JOINs.
+
+---
+
+## ✔ MongoDB Design (Embedded)
+
+One **post** document contains:
+
+```json
+{
+  "title": "My Post",
+  "description": "This is a blog post...",
+  "tags": ["tech", "coding"],
+  "publisher": "Riya",
+  "likes": 250,
+  "comments": [
+    {
+      "user": "Ali",
+      "message": "Nice post!",
+      "likes": 5,
+      "datetime": "2024-03-20"
+    }
+  ]
+}
+```
+
+No joins needed — everything is inside one document.
+
+---
+
+# ⭐ **5. Important MongoDB Methods**
+
+### ✔ Show Databases
+
+```js
+show dbs
+```
+
+### ✔ Use Database
+
+```js
+use bookstoredb
+```
+
+### ✔ Create Collection
+
+```js
+db.createCollection("books")
+```
+
+### ✔ Insert One
+
+```js
+db.books.insertOne({
+  title: "A Tale of Two Cities",
+  author: "Charles Dickens"
+})
+```
+
+### ✔ Insert Many
+
+```js
+db.books.insertMany([
+  { ... },
+  { ... },
+  ...
+])
+```
+
+---
+
+# ⭐ **6. Querying Documents**
+
+### ✔ find() – returns multiple documents
+
+```js
+db.books.find()
+```
+
+### ✔ findOne() – returns one document
+
+```js
+db.books.findOne({ title: "Harry Potter" })
+```
+
+---
+
+# ⭐ **7. WHERE clause equivalent in MongoDB**
+
+### ✔ Equals
+
+```js
+db.collection.find({ key: value })
+```
+
+### ✔ Less than
+
+```js
+db.collection.find({ age: { $lt: 25 } })
+```
+
+### ✔ Greater than or equals
+
+```js
+db.collection.find({ marks: { $gte: 80 } })
+```
+
+### ✔ AND
+
+```js
+db.collection.find({
+  $and: [
+    { age: { $lt: 25 } },
+    { marks: { $gte: 80 } }
+  ]
+})
+```
+
+### ✔ OR
+
+```js
+db.collection.find({
+  $or: [
+    { age: { $lt: 25 } },
+    { marks: { $gte: 80 } }
+  ]
+})
+```
+
+---
+
+# ⭐ **8. Updating Documents**
+
+### ✔ updateOne()
+
+```js
+db.books.updateOne(
+  { title: "Harry Potter" },
+  { $set: { author: "J.K. Rowling" } }
+)
+```
+
+### ✔ updateMany()
+
+```js
+db.books.updateMany(
+  { genre: "fantasy" },
+  { $set: { rating: 5 } }
+)
+```
+
+---
+
+# ⭐ **9. Deleting Documents**
+
+### ✔ deleteOne()
+
+```js
+db.books.deleteOne({ title: "The Alchemist" })
+```
+
+### ✔ deleteMany()
+
+```js
+db.books.deleteMany({ genre: "drama" })
+```
+
+---
+
+# ⭐ **10. Dropping Collection & Database**
+
+### ✔ Drop collection
+
+```js
+db.books.drop()
+```
+
+### ✔ Drop database
+
+```js
+db.dropDatabase()
+```
+
+---
+
+# ⭐ **11. Advanced: Count, Sort, Limit, Skip**
+
+### ✔ Count
+
+```js
+db.books.countDocuments()
+```
+
+### ✔ Sort
+
+```js
+db.books.find().sort({ year: -1 })
+```
+
+### ✔ Limit
+
+```js
+db.books.find().limit(5)
+```
+
+### ✔ Skip
+
+```js
+db.books.find().skip(3)
+```
+
+---
+
+# ⭐ **12. Aggregation Pipeline (Very Important!)**
+
+### ✔ Average
+
+```js
+db.books.aggregate([
+  { $group: { _id: null, avgYear: { $avg: "$publication_year" } } }
+])
+```
+
+### ✔ Group by genre
+
+```js
+db.books.aggregate([
+  { $group: { _id: "$genre", count: { $sum: 1 } } }
+])
+```
+
+### ✔ Group + Sort
+
+```js
+db.books.aggregate([
+  { $group: { _id: "$genre", count: { $sum: 1 } } },
+  { $sort: { count: -1 } }
+])
+```
+
+---
+
+# ⭐ **13. Projection (Select only required fields)**
+
+### ✔ Include selected fields
+
+```js
+db.books.find({}, { title: 1, author: 1, _id: 0 })
+```
+
+### ✔ Exclude fields
+
+```js
+db.books.find({}, { ISBN: 0 })
+```
+
+---
+
+# ⭐ **14. Text Search (Requires index)**
+
+### ✔ Create text index
+
+```js
+db.books.createIndex({ title: "text", author: "text" })
+```
+
+### ✔ Search
+
+```js
+db.books.find({ $text: { $search: "road" } })
+```
+
+---
+
+# ⭐ **15. Regex Search**
+
+### Find titles starting with “The”
+
+```js
+db.books.find({ title: { $regex: "^The", $options: "i" } })
+```
+
+---
+
+# ⭐ **You have now learned the entire MongoDB manual.**
+
+If you want next:
+
+👉 **Solved version of Lab Tasks**
+👉 **Practice questions**
+👉 **MCQs**
+👉 **Viva preparation**
+
+Just tell me!
