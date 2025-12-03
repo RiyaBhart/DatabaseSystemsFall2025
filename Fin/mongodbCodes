@@ -1,0 +1,37 @@
+// 1. Insert document
+db.students.insertOne({
+    name: "Riya",
+    age: 21,
+    department: "CS",
+    gpa: 3.8
+});
+
+// 2. Update GPA
+db.students.updateOne(
+    { name: "Riya" },
+    { $set: { gpa: 3.9 } }
+);
+
+// 3. Delete students with GPA < 2.0
+db.students.deleteMany({ gpa: { $lt: 2.0 } });
+
+// 1. Find orders with total > 3000
+db.orders.find({ total: { $gt: 3000 } });
+
+// 2. Increase price of all items by 10%
+db.orders.updateMany(
+    {},
+    { $mul: { "items.$[].price": 1.10 } }
+);
+
+// 3. Add a new item
+db.orders.updateMany(
+    {},
+    { $push: { items: { name: "Headset", qty: 1, price: 2500 } } }
+);
+
+// 4. Aggregation to calculate total sum of all orders
+db.orders.aggregate([
+    { $group: { _id: null, total_sum: { $sum: "$total" } } }
+]);
+
