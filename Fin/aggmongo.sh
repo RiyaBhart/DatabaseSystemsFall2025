@@ -8,3 +8,9 @@ db.books.aggregate([
     }
   }
 ]);
+
+
+db.books.aggregate([
+  { $group: { _id: "$category", totalBooks: { $sum: 1 } } }
+]);
+
